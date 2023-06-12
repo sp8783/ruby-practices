@@ -1,8 +1,8 @@
+require 'optparse'
+require 'date'
+
 # コマンドラインのオプションから年月を受け取る
 def get_option_year_and_month()
-  require 'optparse'
-  require 'date'
-
   options = {year: Date.today.year, month: Date.today.month}
 
   OptionParser.new do |opts|
@@ -16,8 +16,6 @@ end
 
 # 指定した年月のカレンダーを表示する
 def print_calendar(year, month)
-  require 'date'
-
   first_date = Date.new(year, month, 1)
   last_day = Date.new(year, month, -1).day
 

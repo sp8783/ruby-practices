@@ -2,12 +2,12 @@
 
 score = ARGV[0]
 scores = score.split(',')
-score_strike = 10
+SCORE_STRIKE = 10
 shots = []
 
 scores.each do |s|
   if s == 'X'
-    shots << score_strike
+    shots << SCORE_STRIKE
     shots << 0
   else
     shots << s.to_i
@@ -24,8 +24,8 @@ frames.length.times do |frame_index|
   point += current_frame.sum
   next if frame_index >= 9 # last frame
 
-  if current_frame[0] == score_strike # strike
-    point += if next_frame[0] == score_strike
+  if current_frame[0] == SCORE_STRIKE # strike
+    point += if next_frame[0] == SCORE_STRIKE
                next_frame[0] + next_next_frame[0]
              else
                next_frame.sum

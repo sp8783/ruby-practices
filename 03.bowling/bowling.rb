@@ -14,11 +14,7 @@ scores.each do |s|
   end
 end
 
-frames = []
-shots.each_slice(2) do |s|
-  frames << s
-end
-
+frames = shots.each_slice(2).to_a
 point = 0
 frames.length.times do |frame_index|
   current_frame = frames[frame_index]

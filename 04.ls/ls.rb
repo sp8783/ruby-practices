@@ -24,15 +24,27 @@ def print_all_files(all_files)
 
   (0...num_rows).each do |row|
     subset_files = all_files.select.each_with_index { |_, i| i % num_rows == row }
-    puts subset_files.each_with_index.map { |file, i| file.ljust(widths_per_column[i]) }.join
+    puts subset_files.each_with_index.map { |file, i| ljust_for_multibyte_characters(file, widths_per_column[i]) }.join
   end
 end
 
 # 出力時の幅を列毎に計算する
 def calculation_width_columns(all_files, num_rows)
   all_files.each_slice(num_rows).map do |files|
-    files.map(&:size).max + WIDTH_BETWEEN_COLUMNS
+    files.map { |file| size_for_multibyte_characters(file) }.max + WIDTH_BETWEEN_COLUMNS
   end
+end
+
+# マルチバイト文字を考慮して左詰めした文字列を返す
+def ljust_for_multibyte_characters(string, width, padding = ' ')
+  multibyte_width = size_for_multibyte_characters(string)
+  padding_size = [0, width - multibyte_width].max
+  string + padding * padding_size
+end
+
+# 「マルチバイト文字1文字 = 半角文字2文字」として文字列の長さをカウントする
+def size_for_multibyte_characters(string)
+  string.each_char.map { |c| c.bytesize == 1 ? 1 : 2 }.inject(:+)
 end
 
 main

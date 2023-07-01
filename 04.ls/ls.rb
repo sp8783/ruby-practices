@@ -27,11 +27,9 @@ end
 
 # 出力時の幅を列毎に計算する
 def calculation_width_columns(all_files, num_rows)
-  ret = []
-  all_files.each_slice(num_rows) do |files|
-    ret << files.map(&:size).max + WIDTH_BETWEEN_COLUMNS
+  all_files.each_slice(num_rows).map do |files|
+    files.map(&:size).max + WIDTH_BETWEEN_COLUMNS
   end
-  ret
 end
 
 main

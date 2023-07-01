@@ -5,7 +5,7 @@ WIDTH_BETWEEN_COLUMNS = 2
 
 def main
   all_files = glob_and_sort_files
-  print(all_files)
+  print_all_files(all_files)
 end
 
 # lsコマンド同様の並び順で、ファイルの配列を取得する
@@ -15,14 +15,14 @@ def glob_and_sort_files
 end
 
 # 画面にファイル一覧を出力する
-def print(all_files)
+def print_all_files(all_files)
   num_rows = (all_files.size.to_f / NUMBER_OF_COLUMNS).ceil
   widths_per_column = calculation_width_columns(all_files, num_rows)
 
   (0...num_rows).each do |row|
-    print_files = all_files.select.each_with_index { |_, i| i % num_rows == row }
+    subset_files = all_files.select.each_with_index { |_, i| i % num_rows == row }
     print_line = ''
-    print_files.each_with_index { |file, i| print_line += file.ljust(widths_per_column[i]) }
+    subset_files.each_with_index { |file, i| print_line += file.ljust(widths_per_column[i]) }
     puts print_line
   end
 end

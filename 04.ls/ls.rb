@@ -1,16 +1,19 @@
 # frozen_string_literal: true
 
+require 'optparse'
+
 NUMBER_OF_COLUMNS = 3
 WIDTH_BETWEEN_COLUMNS = 2
 
 def main
-  all_files = glob_and_sort_files
+  options = ARGV.getopts('a')
+  all_files = glob_and_sort_files(options['a'])
   print_all_files(all_files)
 end
 
 # lsコマンド同様の並び順で、ファイルの配列を取得する
-def glob_and_sort_files
-  all_files = Dir.glob('*')
+def glob_and_sort_files(is_all)
+  all_files = is_all ? Dir.entries('.') : Dir.glob('*')
   all_files.sort! { |x, y| x.casecmp(y).nonzero? || y <=> x }
 end
 

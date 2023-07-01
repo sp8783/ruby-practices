@@ -21,9 +21,7 @@ def print_all_files(all_files)
 
   (0...num_rows).each do |row|
     subset_files = all_files.select.each_with_index { |_, i| i % num_rows == row }
-    print_line = ''
-    subset_files.each_with_index { |file, i| print_line += file.ljust(widths_per_column[i]) }
-    puts print_line
+    puts subset_files.each_with_index.map { |file, i| file.ljust(widths_per_column[i]) }.join
   end
 end
 

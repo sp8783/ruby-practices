@@ -6,15 +6,16 @@ NUMBER_OF_COLUMNS = 3
 WIDTH_BETWEEN_COLUMNS = 2
 
 def main
-  options = ARGV.getopts('a')
-  all_files = glob_and_sort_files(options['a'])
+  options = ARGV.getopts('a', 'r')
+  all_files = glob_and_sort_files(options['a'], options['r'])
   print_all_files(all_files)
 end
 
 # lsコマンド同様の並び順で、ファイルの配列を取得する
-def glob_and_sort_files(is_all)
+def glob_and_sort_files(is_all, is_reverse)
   all_files = is_all ? Dir.entries('.') : Dir.glob('*')
   all_files.sort! { |x, y| x.casecmp(y).nonzero? || y <=> x }
+  is_reverse ? all_files.reverse : all_files
 end
 
 # 画面にファイル一覧を出力する

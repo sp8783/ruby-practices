@@ -44,7 +44,7 @@ end
 
 # 「マルチバイト文字1文字 = 半角文字2文字」として文字列の長さをカウントする
 def size_for_multibyte_characters(string)
-  string.each_char.map { |c| c.bytesize == 1 ? 1 : 2 }.inject(:+)
+  string.each_char.map { |c| c.bytesize == 1 ? 1 : 2 }.sum
 end
 
 main

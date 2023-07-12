@@ -81,16 +81,15 @@ def print_all_files_with_details(all_files)
   puts "total #{total_blocks}"
   all_file_details.each do |detail|
     detail.delete('block')
-    puts detail.each.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
+    puts detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
   end
 end
 
 # lオプションで表示させる全ファイルの詳細情報を返す
 def make_all_file_details(all_files)
-  all_file_details = []
-  all_files.each do |file|
+  all_files.map do |file|
     stat = File.lstat(file)
-    file_details = {
+    {
       'permission' => convert_stat_mode_to_permission_code_for_ls_command(stat),
       'hardlink' => stat.nlink.to_s,
       'user_name' => Etc.getpwuid(stat.uid).name,
@@ -100,9 +99,7 @@ def make_all_file_details(all_files)
       'file_name' => FTYPE[stat.ftype] == 'l' ? "#{file} -> #{File.readlink(file)}" : file,
       'block' => stat.blocks
     }
-    all_file_details << file_details
   end
-  all_file_details
 end
 
 # 可変長の文字列が入る列に対し、各列の最大文字数を計算する
@@ -117,7 +114,7 @@ end
 
 # 全ファイルに割り当てられている合計のブロック数を計算する
 def calc_total_blocks(all_file_details)
-  all_file_details.each.map { |detail| detail['block'] }.sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
+  all_file_details.map { |detail| detail['block'] }.sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
 end
 
 # File::stat#modeで得たパーミッションコードから、lsコマンド用のパーミッションコードに変換する

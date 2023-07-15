@@ -116,12 +116,7 @@ def make_all_file_details(all_file_paths, is_file)
   all_file_paths.map do |file_path|
     stat = File.lstat(file_path)
     # コマンドライン引数にファイルが与えられている場合は、ファイル名=ファイルパスにする必要がある
-    filename =
-      if is_file
-        file_path
-      else
-        File.basename(file_path)
-      end
+    filename = is_file ? file_path : File.basename(file_path)
     {
       'permission' => convert_stat_mode_to_permission_code_for_ls_command(stat),
       'hardlink' => stat.nlink.to_s,

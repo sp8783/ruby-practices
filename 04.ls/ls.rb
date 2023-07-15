@@ -27,23 +27,49 @@ PERMISSION = {
 
 def main
   options = ARGV.getopts('a', 'r', 'l')
-  all_files = glob_and_sort_files(options['a'], options['r'])
+  path = ARGV[0]
+
+  all_file_paths = glob_file_paths(path, options['a'])
+  all_file_paths = sort_file_paths(all_file_paths, options['r'])
+
+  is_file = path.nil? || FileTest.file?(path) # コマンドライン引数がファイルか否かによって、ファイル名orファイルパスのどちらを表示するか決まる
   if options['l']
-    print_all_files_with_details(all_files)
+    print_all_files_with_details(all_file_paths, is_file)
   else
-    print_all_files(all_files)
+    print_all_files(all_file_paths, is_file)
   end
 end
 
-# lsコマンド同様の並び順で、ファイルの配列を取得する
-def glob_and_sort_files(is_all, is_reverse)
-  all_files = is_all ? Dir.entries('.') : Dir.glob('*')
-  all_files.sort! { |x, y| x.casecmp(y).nonzero? || y <=> x }
-  is_reverse ? all_files.reverse : all_files
+# ファイルパスの配列を取得する
+def glob_file_paths(path, is_all)
+  if path.nil?
+    is_all ? Dir.entries('.') : Dir.glob('*')
+  elsif FileTest.directory?(path)
+    is_all ? Dir.entries(path) : Dir.glob(File.join(path, '*'))
+  elsif FileTest.file?(path)
+    [path]
+  else
+    puts "ls: cannot access '#{path}': No such file or directory"
+    exit
+  end
+end
+
+# lsコマンド同様の並び順にソートする
+def sort_file_paths(all_file_paths, is_reverse)
+  all_file_paths.sort! { |x, y| x.casecmp(y).nonzero? || y <=> x }
+  is_reverse ? all_file_paths.reverse : all_file_paths
 end
 
 # 画面にファイル一覧を出力する（lオプションがない場合）
-def print_all_files(all_files)
+def print_all_files(all_file_paths, is_file)
+  # コマンドライン引数にファイルが与えられている場合は、ファイル名=ファイルパスにする必要がある
+  all_files =
+    if is_file
+      all_file_paths
+    else
+      all_file_paths.map { |file_path| File.basename(file_path) }
+    end
+
   num_rows = (all_files.size.to_f / NUMBER_OF_COLUMNS).ceil
   widths_per_column = calculation_width_columns(all_files, num_rows)
 
@@ -73,12 +99,12 @@ def size_for_multibyte_characters(string)
 end
 
 # 画面にファイル一覧と各ファイルの詳細情報を出力する（lオプションがある場合）
-def print_all_files_with_details(all_files)
-  all_file_details = make_all_file_details(all_files)
+def print_all_files_with_details(all_file_paths, is_file)
+  all_file_details = make_all_file_details(all_file_paths, is_file)
   max_lengths = calc_max_length_for_variable_length_columns(all_file_details)
   total_blocks = calc_total_blocks(all_file_details)
 
-  puts "total #{total_blocks}"
+  puts "total #{total_blocks}" unless is_file
   all_file_details.each do |detail|
     detail.delete('block')
     puts detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
@@ -86,9 +112,11 @@ def print_all_files_with_details(all_files)
 end
 
 # lオプションで表示させる全ファイルの詳細情報を返す
-def make_all_file_details(all_files)
-  all_files.map do |file|
-    stat = File.lstat(file)
+def make_all_file_details(all_file_paths, is_file)
+  all_file_paths.map do |file_path|
+    stat = File.lstat(file_path)
+    # コマンドライン引数にファイルが与えられている場合は、ファイル名=ファイルパスにする必要がある
+    filename = is_file ? file_path : File.basename(file_path)
     {
       'permission' => convert_stat_mode_to_permission_code_for_ls_command(stat),
       'hardlink' => stat.nlink.to_s,
@@ -96,7 +124,7 @@ def make_all_file_details(all_files)
       'group_name' => Etc.getgrgid(stat.gid).name,
       'file_size' => stat.size.to_s,
       'timestamp' => stat.mtime.strftime('%b %e %R'),
-      'file_name' => FTYPE[stat.ftype] == 'l' ? "#{file} -> #{File.readlink(file)}" : file,
+      'file_name' => FTYPE[stat.ftype] == 'l' ? "#{filename} -> #{File.readlink(filename)}" : filename,
       'block' => stat.blocks
     }
   end

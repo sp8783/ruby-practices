@@ -26,15 +26,14 @@ def wc_with_no_argument(display_flags)
 end
 
 def wc_with_filepaths(filepaths, display_flags)
-  file_details = []
-  filepaths.each do |filepath|
+  file_details = filepaths.map do |filepath|
     if File.file?(filepath)
       text = File.read(filepath)
-      file_details << make_file_detail(text, filepath, 'file')
+      make_file_detail(text, filepath, 'file')
     elsif File.directory?(filepath)
-      file_details << make_file_detail('', filepath, 'directory')
+      make_file_detail('', filepath, 'directory')
     else
-      file_details << make_file_detail('', filepath, 'no_exist')
+      make_file_detail('', filepath, 'no_exist')
     end
   end
   file_details << make_total_value_to_file_detail(file_details) if file_details.size >= 2

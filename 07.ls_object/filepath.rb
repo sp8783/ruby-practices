@@ -16,7 +16,7 @@ class Filepath
     if @path.nil?
       @options['a'] ? Dir.entries('.') : Dir.glob('*')
     elsif FileTest.directory?(@path)
-      @options['a'] ? Dir.entries(@path).map{ |path| @path + "/" + path } : Dir.glob(File.join(@path, '*'))
+      @options['a'] ? Dir.entries(@path).map { |path| "#{@path}/#{path}" } : Dir.glob(File.join(@path, '*'))
     elsif FileTest.file?(@path)
       [@path]
     else

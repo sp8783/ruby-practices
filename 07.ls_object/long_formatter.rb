@@ -58,7 +58,7 @@ class LongFormatter
         group_name: Etc.getgrgid(stat.gid).name,
         file_size: stat.size.to_s,
         timestamp: stat.mtime.strftime('%b %e %R'),
-        file_name: FTYPE[stat.ftype] == 'l' ? "#{filename} -> #{File.readlink(filename)}" : filename,
+        file_name: FTYPE[stat.ftype] == 'l' ? "#{filename} -> #{File.readlink(file_path)}" : filename,
         block: stat.blocks
       }
     end

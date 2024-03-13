@@ -14,10 +14,9 @@ class LsCommand
     all_file_paths = Filepath.new(@path, @options).make_all_file_paths
     is_file = @path.nil? ? false : FileTest.file?(@path)
 
-    if @options['l']
-      LongFormatter.new(all_file_paths, is_file).display_all_files_in_long_format
-    else
-      ShortFormatter.new(all_file_paths, is_file).display_all_files_in_short_format
+    formatter = @options['l'] ? LongFormatter : ShortFormatter
+    formatter.new(all_file_paths, is_file).format.each do |line|
+      puts line
     end
   end
 end

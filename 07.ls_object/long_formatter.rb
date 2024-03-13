@@ -28,17 +28,18 @@ class LongFormatter
     @is_file = is_file
   end
 
-  # 画面にファイル一覧と各ファイルの詳細情報を出力する（lオプションがある場合）
-  def display_all_files_in_long_format
+  # 画面にファイル一覧と各ファイルの詳細情報を出力用の形式にする（lオプションがある場合）
+  def format
     all_file_details = make_all_file_details
     max_lengths = calc_max_length_for_variable_length_columns(all_file_details)
     total_blocks = calc_total_blocks(all_file_details)
 
-    puts "total #{total_blocks}" unless @is_file
+    print_format = @is_file ? [] : [['total', total_blocks.to_s].join(' ')]
     all_file_details.each do |detail|
       detail.delete(:block)
-      puts detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
+      print_format << detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
     end
+    print_format
   end
 
   private

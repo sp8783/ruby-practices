@@ -9,7 +9,8 @@ class ShortFormatter
     @is_file = is_file
   end
 
-  def display_all_files_in_short_format
+  # 画面にファイル一覧と各ファイルの詳細情報を出力用の形式にする（lオプションがない場合）
+  def format
     # コマンドライン引数にファイルが与えられている場合は、ファイル名=ファイルパスにする必要がある
     all_files =
       if @is_file
@@ -20,10 +21,10 @@ class ShortFormatter
 
     num_rows = (all_files.size.to_f / NUMBER_OF_COLUMNS).ceil
     widths_per_column = calculation_width_columns(all_files, num_rows)
-
-    (0...num_rows).each do |row|
-      subset_files = all_files.select.each_with_index { |_, i| i % num_rows == row }
-      puts subset_files.each_with_index.map { |file, i| ljust_for_multibyte_characters(file, widths_per_column[i]) }.join
+    (0...num_rows).map do |row|
+      all_files.select.each_with_index { |_, i| i % num_rows == row }
+               .map.with_index { |file, i| ljust_for_multibyte_characters(file, widths_per_column[i]) }
+               .join
     end
   end
 

@@ -36,7 +36,7 @@ class LongFormatter
 
     puts "total #{total_blocks}" unless @is_file
     all_file_details.each do |detail|
-      detail.delete('block')
+      detail.delete(:block)
       puts detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
     end
   end
@@ -51,21 +51,21 @@ class LongFormatter
       # コマンドライン引数にファイルが与えられている場合は、ファイル名=ファイルパスにする必要がある
       filename = @is_file ? file_path : File.basename(file_path)
       {
-        'permission' => convert_stat_mode_to_permission_code_for_ls_command(stat),
-        'hardlink' => stat.nlink.to_s,
-        'user_name' => Etc.getpwuid(stat.uid).name,
-        'group_name' => Etc.getgrgid(stat.gid).name,
-        'file_size' => stat.size.to_s,
-        'timestamp' => stat.mtime.strftime('%b %e %R'),
-        'file_name' => FTYPE[stat.ftype] == 'l' ? "#{filename} -> #{File.readlink(filename)}" : filename,
-        'block' => stat.blocks
+        permission: convert_stat_mode_to_permission_code_for_ls_command(stat),
+        hardlink: stat.nlink.to_s,
+        user_name: Etc.getpwuid(stat.uid).name,
+        group_name: Etc.getgrgid(stat.gid).name,
+        file_size: stat.size.to_s,
+        timestamp: stat.mtime.strftime('%b %e %R'),
+        file_name: FTYPE[stat.ftype] == 'l' ? "#{filename} -> #{File.readlink(filename)}" : filename,
+        block: stat.blocks
       }
     end
   end
 
   # 可変長の文字列が入る列に対し、各列の最大文字数を計算する
   def calc_max_length_for_variable_length_columns(all_file_details)
-    variable_length_columns = %w[hardlink user_name group_name file_size]
+    variable_length_columns = %i[hardlink user_name group_name file_size]
     max_lengths = Hash.new(0)
     all_file_details.each do |detail|
       variable_length_columns.each { |col| max_lengths[col] = [max_lengths[col], detail[col].size].max }
@@ -75,7 +75,7 @@ class LongFormatter
 
   # 全ファイルに割り当てられている合計のブロック数を計算する
   def calc_total_blocks(all_file_details)
-    all_file_details.map { |detail| detail['block'] }.sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
+    all_file_details.map { |detail| detail[:block] }.sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
   end
 
   # File::stat#modeで得たパーミッションコードから、lsコマンド用のパーミッションコードに変換する

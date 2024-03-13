@@ -12,7 +12,7 @@ class LsCommand
 
   def execute
     all_file_paths = Filepath.new(@path, @options).make_all_file_paths
-    is_file = @path.nil? ? false : FileTest.file?(@path)
+    is_file = @path && FileTest.file?(@path)
 
     formatter = @options['l'] ? LongFormatter : ShortFormatter
     formatter.new(all_file_paths, is_file).format.each do |line|

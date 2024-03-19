@@ -16,8 +16,8 @@ class LsCommand
     all_file_paths = make_all_file_paths
     is_file = @path && FileTest.file?(@path)
 
-    formatter = @options['l'] ? LongFormatData : ShortFormatData
-    all_metadata = formatter.new(all_file_paths, is_file).format
+    obtainer = @options['l'] ? LongFormatData : ShortFormatData
+    all_metadata = obtainer.new(all_file_paths, is_file).obtain_metadata
 
     if @options['l']
       display_files_for_long_format(all_metadata)

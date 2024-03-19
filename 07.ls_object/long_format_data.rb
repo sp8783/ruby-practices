@@ -31,7 +31,7 @@ class LongFormatData
   # 画面にファイル一覧と各ファイルの詳細情報を出力用の形式にする（lオプションがある場合）
   def obtain_metadata
     all_file_details = make_all_file_details
-    all_file_details.unshift({ total_blocks: calc_total_blocks(all_file_details) }) unless @is_file
+    all_file_details.unshift({ total_blocks: calculation_total_blocks(all_file_details) }) unless @is_file
     all_file_details
   end
 
@@ -58,7 +58,7 @@ class LongFormatData
   end
 
   # 全ファイルに割り当てられている合計のブロック数を計算する
-  def calc_total_blocks(all_file_details)
+  def calculation_total_blocks(all_file_details)
     all_file_details.map { |detail| detail[:block] }.sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
   end
 

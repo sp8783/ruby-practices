@@ -53,14 +53,14 @@ class LsCommand
       total_blocks = all_file_details.shift[:total_blocks]
       puts "total #{total_blocks}"
     end
-    max_lengths = calc_max_length_for_variable_length_columns(all_file_details)
+    max_lengths = calculation_max_length_for_variable_length_columns(all_file_details)
     all_file_details.each do |detail|
       detail.delete(:block)
       puts detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
     end
   end
 
-  def calc_max_length_for_variable_length_columns(all_file_details)
+  def calculation_max_length_for_variable_length_columns(all_file_details)
     variable_length_columns = %i[hardlink user_name group_name file_size]
     max_lengths = Hash.new(0)
     all_file_details.each do |detail|

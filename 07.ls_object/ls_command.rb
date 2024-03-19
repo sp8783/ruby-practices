@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'short_formatter'
-require_relative 'long_formatter'
+require_relative 'short_format_data'
+require_relative 'long_format_data'
 
 NUMBER_OF_COLUMNS = 3
 WIDTH_BETWEEN_COLUMNS = 2
@@ -16,7 +16,7 @@ class LsCommand
     all_file_paths = make_all_file_paths
     is_file = @path && FileTest.file?(@path)
 
-    formatter = @options['l'] ? LongFormatter : ShortFormatter
+    formatter = @options['l'] ? LongFormatData : ShortFormatData
     all_metadata = formatter.new(all_file_paths, is_file).format
 
     if @options['l']

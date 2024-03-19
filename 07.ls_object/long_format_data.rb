@@ -22,7 +22,7 @@ PERMISSION = {
   '7' => 'rwx'
 }.freeze
 
-class LongFormatter
+class LongFormatData
   def initialize(all_file_paths, is_file)
     @all_file_paths = all_file_paths
     @is_file = is_file

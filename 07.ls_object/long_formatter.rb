@@ -31,8 +31,15 @@ class LongFormatter
   # 画面にファイル一覧と各ファイルの詳細情報を出力用の形式にする（lオプションがある場合）
   def format
     all_file_details = make_all_file_details
-    all_file_details.unshift({ total_blocks: calculation_total_blocks(all_file_details) }) unless @is_file
-    all_file_details
+    max_lengths = calc_max_length_for_variable_length_columns(all_file_details)
+    total_blocks = calc_total_blocks(all_file_details)
+
+    print_format = @is_file ? [] : [['total', total_blocks.to_s].join(' ')]
+    all_file_details.each do |detail|
+      detail.delete(:block)
+      print_format << detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
+    end
+    print_format
   end
 
   private
@@ -55,6 +62,16 @@ class LongFormatter
         block: stat.blocks
       }
     end
+  end
+
+  # 可変長の文字列が入る列に対し、各列の最大文字数を計算する
+  def calc_max_length_for_variable_length_columns(all_file_details)
+    variable_length_columns = %i[hardlink user_name group_name file_size]
+    max_lengths = Hash.new(0)
+    all_file_details.each do |detail|
+      variable_length_columns.each { |col| max_lengths[col] = [max_lengths[col], detail[col].size].max }
+    end
+    max_lengths
   end
 
   # 全ファイルに割り当てられている合計のブロック数を計算する

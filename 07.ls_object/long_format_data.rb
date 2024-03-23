@@ -29,7 +29,7 @@ class LongFormatData
   end
 
   # 画面にファイル一覧と各ファイルの詳細情報を出力用の形式にする（lオプションがある場合）
-  def obtain_metadata
+  def format
     all_file_details = make_all_file_details
     all_file_details.unshift({ total_blocks: calculation_total_blocks(all_file_details) }) unless @is_file
     all_file_details

@@ -10,7 +10,7 @@ class LsCommand
   end
 
   def execute
-    all_file_paths = make_all_file_paths
+    all_file_paths = sort_file_paths(glob_file_paths)
     is_file = @path && FileTest.file?(@path)
 
     formatter = @options['l'] ? LongFormatter : ShortFormatter
@@ -20,10 +20,6 @@ class LsCommand
   end
 
   private
-
-  def make_all_file_paths
-    sort_file_paths(glob_file_paths)
-  end
 
   def glob_file_paths
     if FileTest.directory?(@path)

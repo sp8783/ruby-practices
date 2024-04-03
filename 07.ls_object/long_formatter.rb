@@ -28,19 +28,16 @@ class LongFormatter
   # lオプションで表示させる全ファイルの詳細情報を返す
   def make_all_file_details
     @all_file_paths.map do |file_path|
-      stat = File.lstat(file_path)
-
-      # コマンドライン引数にファイルが与えられている場合は、ファイル名=ファイルパスにする必要がある
-      filename = @is_file ? file_path : File.basename(file_path)
+      file_detail = FileDetail.new(file_path, @is_file)
       {
-        permission: convert_stat_mode_to_permission_code_for_ls_command(stat),
-        hardlink: stat.nlink.to_s,
-        user_name: Etc.getpwuid(stat.uid).name,
-        group_name: Etc.getgrgid(stat.gid).name,
-        file_size: stat.size.to_s,
-        timestamp: stat.mtime.strftime('%b %e %R'),
-        file_name: FTYPE[stat.ftype] == 'l' ? "#{filename} -> #{File.readlink(file_path)}" : filename,
-        block: stat.blocks
+        permission: file_detail.permission,
+        hardlink: file_detail.hardlink,
+        user_name: file_detail.user_name,
+        group_name: file_detail.group_name,
+        file_size: file_detail.file_size,
+        timestamp: file_detail.timestamp,
+        file_name: file_detail.file_name,
+        block: file_detail.block
       }
     end
   end

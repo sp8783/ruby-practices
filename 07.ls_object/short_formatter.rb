@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-NUMBER_OF_COLUMNS = 3
-WIDTH_BETWEEN_COLUMNS = 2
-
 class ShortFormatter
+  NUMBER_OF_COLUMNS = 3
+  WIDTH_BETWEEN_COLUMNS = 2
+  
   def initialize(all_file_paths, is_file)
     @all_file_paths = all_file_paths
     @is_file = is_file

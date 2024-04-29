@@ -16,9 +16,9 @@ class LongFormatter
     total_blocks = calculation_total_blocks(all_file_details)
 
     print_format = @is_file ? [] : [['total', total_blocks.to_s].join(' ')]
+    print_cols = %i[permission hardlink user_name group_name file_size timestamp file_name]
     all_file_details.each do |detail|
-      detail.delete(:block)
-      print_format << detail.map { |k, v| v.rjust(max_lengths[k]) }.join(' ')
+      print_format << print_cols.map { |col| detail.send(col).rjust(max_lengths[col]) }.join(' ')
     end
     print_format
   end
@@ -27,19 +27,7 @@ class LongFormatter
 
   # lオプションで表示させる全ファイルの詳細情報を返す
   def make_all_file_details
-    @all_file_paths.map do |file_path|
-      file_detail = FileDetail.new(file_path, @is_file)
-      {
-        permission: file_detail.permission,
-        hardlink: file_detail.hardlink,
-        user_name: file_detail.user_name,
-        group_name: file_detail.group_name,
-        file_size: file_detail.file_size,
-        timestamp: file_detail.timestamp,
-        file_name: file_detail.file_name,
-        block: file_detail.block
-      }
-    end
+    @all_file_paths.map { |file_path| FileDetail.new(file_path, @is_file) }
   end
 
   # 可変長の文字列が入る列に対し、各列の最大文字数を計算する
@@ -47,14 +35,14 @@ class LongFormatter
     variable_length_columns = %i[hardlink user_name group_name file_size]
     max_lengths = Hash.new(0)
     all_file_details.each do |detail|
-      variable_length_columns.each { |col| max_lengths[col] = [max_lengths[col], detail[col].size].max }
+      variable_length_columns.each { |col| max_lengths[col] = [max_lengths[col], detail.send(col).size].max }
     end
     max_lengths
   end
 
   # 全ファイルに割り当てられている合計のブロック数を計算する
   def calculation_total_blocks(all_file_details)
-    all_file_details.map { |detail| detail[:block] }.sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
+    all_file_details.map(&:block).sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
   end
 
   # File::stat#modeで得たパーミッションコードから、lsコマンド用のパーミッションコードに変換する

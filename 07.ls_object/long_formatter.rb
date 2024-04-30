@@ -9,7 +9,6 @@ class LongFormatter
     @is_file = is_file
   end
 
-  # 画面にファイル一覧と各ファイルの詳細情報を出力用の形式にする（lオプションがある場合）
   def format
     all_file_details = make_all_file_details
     max_lengths = calculation_max_length_for_variable_length_columns(all_file_details)
@@ -25,12 +24,10 @@ class LongFormatter
 
   private
 
-  # lオプションで表示させる全ファイルの詳細情報を返す
   def make_all_file_details
     @all_file_paths.map { |file_path| FileDetail.new(file_path, @is_file) }
   end
 
-  # 可変長の文字列が入る列に対し、各列の最大文字数を計算する
   def calculation_max_length_for_variable_length_columns(all_file_details)
     variable_length_columns = %i[hardlink user_name group_name file_size]
     max_lengths = Hash.new(0)
@@ -40,12 +37,10 @@ class LongFormatter
     max_lengths
   end
 
-  # 全ファイルに割り当てられている合計のブロック数を計算する
   def calculation_total_blocks(all_file_details)
     all_file_details.map(&:block).sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
   end
 
-  # File::stat#modeで得たパーミッションコードから、lsコマンド用のパーミッションコードに変換する
   def convert_stat_mode_to_permission_code_for_ls_command(stat)
     permission = stat.mode.to_s(8)[-3..].chars.map { |i| PERMISSION[i] }.join
     if stat.setuid?

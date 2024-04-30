@@ -40,7 +40,6 @@ class FileDetail
 
   private
 
-  # File::stat#modeで得たパーミッションコードから、lsコマンド用のパーミッションコードに変換する
   def convert_stat_mode_to_permission_code_for_ls_command(stat)
     permission = stat.mode.to_s(8)[-3..].chars.map { |i| PERMISSION[i] }.join
     if stat.setuid?

@@ -35,18 +35,4 @@ class LongFormatter
   def calculation_total_blocks
     @all_file_details.map(&:block).sum / 2 # Linuxのブロック数 = File::Statのブロック数 / 2
   end
-
-  def convert_stat_mode_to_permission_code_for_ls_command(stat)
-    permission = stat.mode.to_s(8)[-3..].chars.map { |i| PERMISSION[i] }.join
-    if stat.setuid?
-      permission[2] = (permission[2] == 'x' ? 's' : 'S')
-    end
-    if stat.setgid?
-      permission[5] = (permission[5] == 'x' ? 's' : 'S')
-    end
-    if stat.sticky?
-      permission[8] = (permission[8] == 'x' ? 't' : 'T')
-    end
-    FTYPE[stat.ftype] + permission
-  end
 end

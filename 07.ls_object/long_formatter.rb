@@ -14,9 +14,16 @@ class LongFormatter
     total_blocks = calculation_total_blocks
 
     print_format = @is_file ? [] : [['total', total_blocks.to_s].join(' ')]
-    print_cols = %i[permission hardlink user_name group_name file_size timestamp file_name]
     @all_file_details.each do |detail|
-      print_format << print_cols.map { |col| detail.send(col).rjust(max_lengths[col]) }.join(' ')
+      print_format << [
+        detail.permission,
+        detail.hardlink.rjust(max_lengths[:hardlink]),
+        detail.user_name.rjust(max_lengths[:user_name]),
+        detail.group_name.rjust(max_lengths[:group_name]),
+        detail.file_size.rjust(max_lengths[:file_size]),
+        detail.timestamp,
+        detail.file_name
+      ].join(' ')
     end
     print_format
   end
@@ -24,10 +31,12 @@ class LongFormatter
   private
 
   def calculation_max_length_for_variable_length_columns
-    variable_length_columns = %i[hardlink user_name group_name file_size]
     max_lengths = Hash.new(0)
     @all_file_details.each do |detail|
-      variable_length_columns.each { |col| max_lengths[col] = [max_lengths[col], detail.send(col).size].max }
+      max_lengths[:hardlink] = [max_lengths[:hardlink], detail.hardlink.size].max
+      max_lengths[:user_name] = [max_lengths[:user_name], detail.user_name.size].max
+      max_lengths[:group_name] = [max_lengths[:group_name], detail.group_name.size].max
+      max_lengths[:file_size] = [max_lengths[:file_size], detail.file_size.size].max
     end
     max_lengths
   end
